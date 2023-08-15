@@ -54,6 +54,6 @@ public class JsonSerialization implements RpcSerialization {
 
     @Override
     public <T> T deserialize(byte[] data, Class<T> clz) throws IOException {
-        return MAPPER.readValue(Arrays.toString(data), clz);
+        return MAPPER.readValue(data, clz);
     }
 }

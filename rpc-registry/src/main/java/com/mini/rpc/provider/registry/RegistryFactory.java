@@ -16,6 +16,9 @@ public class RegistryFactory {
                         case EUREKA:
                             registryService = new EurekaRegistryService(registryAddr);
                             break;
+                        case NACOS:
+                            registryService = new NacosRegistryService(registryAddr);
+                            break;
                     }
                 }
             }

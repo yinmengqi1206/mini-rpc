@@ -131,6 +131,25 @@
                 <version>4.12</version>
                 <scope>test</scope>
             </dependency>
+            <!--nacos-->
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-client</artifactId>
+                <version>${nacos.version}</version>
+                <!-- 指定纯净版SDK -->
+                <classifier>pure</classifier>
+            </dependency>
+            <!-- 使用纯净版时必须要引入同版本nacos-api和nacos-common，否则可能出现运行时找不到类的问题 -->
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-common</artifactId>
+                <version>${nacos.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-api</artifactId>
+                <version>${nacos.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -138,6 +157,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <jackson.version>2.12.3</jackson.version>
+        <!-- 2.1.2版本以上支持纯净版客户端 -->
+        <nacos.version>2.2.1</nacos.version>
     </properties>
 
 </project>

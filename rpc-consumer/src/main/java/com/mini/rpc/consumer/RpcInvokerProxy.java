@@ -10,6 +10,7 @@ import com.mini.rpc.protocol.MsgType;
 import com.mini.rpc.protocol.ProtocolConstants;
 import com.mini.rpc.provider.registry.RegistryService;
 import com.mini.rpc.serialization.SerializationTypeEnum;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.DefaultEventLoop;
 import io.netty.util.concurrent.DefaultPromise;
 
@@ -50,10 +51,10 @@ public class RpcInvokerProxy implements InvocationHandler {
         request.setParams(args);
         protocol.setBody(request);
 
-        RpcConsumer rpcConsumer = new RpcConsumer();
+        RpcConsumer rpcConsumer = RpcConsumerFactory.getInstance(protocol, this.registryService);
         MiniRpcFuture<MiniRpcResponse> future = new MiniRpcFuture<>(new DefaultPromise<>(new DefaultEventLoop()), timeout);
         MiniRpcRequestHolder.REQUEST_MAP.put(requestId, future);
-        rpcConsumer.sendRequest(protocol, this.registryService);
+        rpcConsumer.sendRequest(protocol);
 
         // TODO hold request by ThreadLocal
 

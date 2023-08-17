@@ -46,7 +46,7 @@ public class RpcConsumer {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline()
                                 //心跳检测
-                                .addLast(new IdleStateHandler(0, 30, 0, TimeUnit.SECONDS))
+                                .addLast(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS))
                                 .addLast(new MiniRpcEncoder())
                                 .addLast(new MiniRpcDecoder())
                                 .addLast(new RpcResponseHandler());

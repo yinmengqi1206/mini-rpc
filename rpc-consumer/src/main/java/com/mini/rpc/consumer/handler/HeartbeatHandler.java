@@ -1,6 +1,12 @@
 package com.mini.rpc.consumer.handler;
 
+import com.mini.rpc.common.MiniRpcRequestHolder;
 import com.mini.rpc.consumer.RpcConsumer;
+import com.mini.rpc.protocol.MiniRpcProtocol;
+import com.mini.rpc.protocol.MsgHeader;
+import com.mini.rpc.protocol.MsgType;
+import com.mini.rpc.protocol.ProtocolConstants;
+import com.mini.rpc.serialization.SerializationTypeEnum;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
@@ -63,8 +69,19 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state().equals(IdleState.WRITER_IDLE)) {
                 /**发送心跳,保持长连接*/
-                log.info("发送心跳 PING");
-                ctx.channel().writeAndFlush("PING");
+                log.info("发送心跳 {}",ProtocolConstants.PING);
+                MiniRpcProtocol<String> protocol = new MiniRpcProtocol<>();
+                MsgHeader header = new MsgHeader();
+                long requestId = MiniRpcRequestHolder.REQUEST_ID_GEN.incrementAndGet();
+                header.setMagic(ProtocolConstants.MAGIC);
+                header.setVersion(ProtocolConstants.VERSION);
+                header.setRequestId(requestId);
+                header.setSerialization((byte) SerializationTypeEnum.HESSIAN.getType());
+                header.setMsgType((byte) MsgType.HEARTBEAT.getType());
+                header.setStatus((byte) 0x1);
+                protocol.setHeader(header);
+                protocol.setBody(ProtocolConstants.PING);
+                ctx.channel().writeAndFlush(protocol);
             }
         }
         super.userEventTriggered(ctx, evt);

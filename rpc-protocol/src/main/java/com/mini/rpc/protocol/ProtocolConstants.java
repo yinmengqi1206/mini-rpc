@@ -7,4 +7,8 @@ public class ProtocolConstants {
 
     public static final byte VERSION = 0x1;
 
+    public static final String PING = "ping";
+
+    public static final String PONG = "pong";
+
 }

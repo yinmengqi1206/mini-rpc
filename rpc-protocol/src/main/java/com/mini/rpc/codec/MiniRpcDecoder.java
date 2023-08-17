@@ -1,6 +1,7 @@
 package com.mini.rpc.codec;
 
 import com.mini.rpc.common.MiniRpcRequest;
+import com.mini.rpc.common.MiniRpcRequestHolder;
 import com.mini.rpc.common.MiniRpcResponse;
 import com.mini.rpc.protocol.MiniRpcProtocol;
 import com.mini.rpc.protocol.MsgHeader;
@@ -8,12 +9,16 @@ import com.mini.rpc.protocol.MsgType;
 import com.mini.rpc.protocol.ProtocolConstants;
 import com.mini.rpc.serialization.RpcSerialization;
 import com.mini.rpc.serialization.SerializationFactory;
+import com.mini.rpc.serialization.SerializationTypeEnum;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Objects;
 
+@Slf4j
 public class MiniRpcDecoder extends ByteToMessageDecoder {
 
     /*
@@ -86,7 +91,16 @@ public class MiniRpcDecoder extends ByteToMessageDecoder {
                 }
                 break;
             case HEARTBEAT:
-                // TODO
+                String heart = rpcSerialization.deserialize(data, String.class);
+                log.info("收到心跳:{}",heart);
+                if(Objects.equals(heart,ProtocolConstants.PING)){
+                    /**响应心跳*/
+                    log.info("响应心跳 {}",ProtocolConstants.PONG);
+                    MiniRpcProtocol<String> protocol = new MiniRpcProtocol<>();
+                    protocol.setHeader(header);
+                    protocol.setBody(ProtocolConstants.PONG);
+                    ctx.channel().writeAndFlush(protocol);
+                }
                 break;
         }
     }

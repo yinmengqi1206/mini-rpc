@@ -42,7 +42,7 @@ public class NacosRegistryService implements RegistryService {
     @Override
     public ServiceMeta discovery(String serviceName, int invokerHashCode) throws Exception {
         Instance instance = naming.selectOneHealthyInstance(serviceName);
-        String[] split = serviceName.split("#");
+        String[] split = serviceName.split(RpcServiceHelper.SERVICE_JOIN);
         return new ServiceMeta()
                 .setServiceAddr(instance.getIp())
                 .setServicePort(instance.getPort())

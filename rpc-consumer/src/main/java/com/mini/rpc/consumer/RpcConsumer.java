@@ -45,8 +45,6 @@ public class RpcConsumer {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline()
-                                //心跳检测
-                                .addLast(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS))
                                 .addLast(new MiniRpcEncoder())
                                 .addLast(new MiniRpcDecoder())
                                 .addLast(new RpcResponseHandler());
@@ -65,7 +63,9 @@ public class RpcConsumer {
         future.addListener((ChannelFutureListener) arg0 -> {
             if (future.isSuccess()) {
                 reconnectTimes = 0;
-                log.info("connect rpc server {} on port {} success.", host, port);
+                //心跳检测
+                //future.channel().pipeline().addFirst(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS));
+                log.info("connect rpc server {} on port {} success.names:{}", host, port,future.channel().pipeline().names());
             } else {
                 reconnectTimes++;
                 final EventLoop loop = future.channel().eventLoop();
@@ -87,7 +87,9 @@ public class RpcConsumer {
             }
         });
         //添加心跳检测处理器
-        future.channel().pipeline().addLast(new HeartbeatHandler(this));
+        future.channel().pipeline()
+                .addFirst(new HeartbeatHandler(this))
+                .addFirst(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS));
         //阻塞等待连接完成
         future.sync();
     }
